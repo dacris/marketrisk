@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MarketRisk.Testing\AssetConfig.cs" Link="AssetConfig.cs" />
+    <Compile Include="..\MarketRisk.Testing\AssetUtils.cs" Link="AssetUtils.cs" />
+    <Compile Include="..\MarketRisk.Testing\CSVHelper.cs" Link="CSVHelper.cs" />
+    <Compile Include="..\MarketRisk.Testing\ListUtils.cs" Link="ListUtils.cs" />
+    <Compile Include="..\MarketRisk.Testing\Tester.cs" Link="Tester.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\MarketRisk.Testing\Data\AssetConfig.json" Link="Data\AssetConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\CABond.txt" Link="Data\CABond.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Dow.txt" Link="Data\Dow.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Gold.txt" Link="Data\Gold.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Palladium.txt" Link="Data\Palladium.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Platinum.txt" Link="Data\Platinum.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Silver.txt" Link="Data\Silver.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\SP500.txt" Link="Data\SP500.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\TSX.txt" Link="Data\TSX.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\USBond.txt" Link="Data\USBond.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MarketRisk.Portfolio.Std\MarketRisk.Portfolio.Std.csproj" />
+    <ProjectReference Include="..\MarketRisk.Recommend.Std\MarketRisk.Recommend.Std.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\MarketRisk.Testing\Data\AssetIncome.cfg" Link="Data\AssetIncome.cfg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+</Project>

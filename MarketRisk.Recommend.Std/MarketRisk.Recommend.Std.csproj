@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MarketRisk.Recommend\AlgorithmicRiskRecommendationEngine.cs" Link="AlgorithmicRiskRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\Constants.cs" Link="Constants.cs" />
+    <Compile Include="..\MarketRisk.Recommend\ExponentialRiskRecommendationEngine.cs" Link="ExponentialRiskRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\IRecommendationEngine.cs" Link="IRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\LinearRiskRecommendationEngine.cs" Link="LinearRiskRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\Planning\PlanCalculator.cs" Link="Planning\PlanCalculator.cs" />
+    <Compile Include="..\MarketRisk.Recommend\Planning\PlanInput.cs" Link="Planning\PlanInput.cs" />
+    <Compile Include="..\MarketRisk.Recommend\QuadraticRiskRecommendationEngine.cs" Link="QuadraticRiskRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\ReciprocalRiskRecommendationEngine.cs" Link="ReciprocalRiskRecommendationEngine.cs" />
+    <Compile Include="..\MarketRisk.Recommend\Recommendation.cs" Link="Recommendation.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Planning\" />
+  </ItemGroup>
+
+</Project>
