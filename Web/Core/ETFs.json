@@ -1,0 +1,11 @@
+{
+"USBond": {"URL": "https://etfdb.com/etfs/bond/treasuries/", "ETFs": "IEF, VGIT, TLH"},
+"SP500": {"URL": "https://etfdb.com/etfs/asset-class/equity/", "ETFs": "VOO (US), SPY (US), ZSP (Canada)"},
+"Dow": {"URL": "https://etfdb.com/etfs/asset-class/equity/", "ETFs": "DIA (US), ZDJ (Canada)"},
+"Gold": {"URL": "https://etfdb.com/etfdb-category/precious-metals/", "ETFs": "IAU, BAR, SGOL, GLDM"},
+"Silver": {"URL": "https://etfdb.com/etfdb-category/precious-metals/", "ETFs": "SIVR"},
+"Palladium": {"URL": "https://etfdb.com/etfdb-category/precious-metals/", "ETFs": "PALL"},
+"Platinum": {"URL": "https://etfdb.com/etfdb-category/precious-metals/", "ETFs": "PPLT, PLTM"},
+"TSX": {"URL": "https://etfdb.com/etfs/asset-class/equity/", "ETFs": "XIC, ZCN"},
+"CABond": {"URL": "https://dividendearner.com/best-bond-etf-canada/", "ETFs": "VGV, ZGB, XGB"}
+}

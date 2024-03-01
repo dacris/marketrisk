@@ -1,0 +1,334 @@
+<html>
+<head>
+<link rel="icon" type="image/png" href="NewLogo.png"/>
+<title>MarketRisk, v2.0</title>
+<style>
+* { font-family: Verdana, Arial, Sans-serif; font-size: 100%; }
+h1 { font-size: 150%; color: #669; }
+h2 { font-size: 120%; }
+hr { border: 1px solid #ccc; border-bottom: none; border-left: none; border-right: none; }
+body { margin: 0; padding: 18px; }
+.white-popup {
+  position: relative;
+  background: #FFF;
+  padding: 20px;
+  width: auto;
+  max-width: 500px;
+  margin: 20px auto;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="mfp.css" />
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="mfp.js"></script>
+</head>
+<body onload="firstLoad();">
+<script type="text/javascript">
+/*
+$.getJSON('State.json', function(data) {
+	window.mrstate = data;
+});
+*/
+var startingState = {"AssetCombination":[],"AssetPrices":{},"AssetPositions":{},"BondYields":{"USBond":[0.5],"CABond":[0.5]},"AssetExchangeRates":{"CABond":1.1,"USBond":1.0},"RiskAmount":"0"};
+window.mrstate = startingState;
+
+function init()
+{
+	$("#combostats").hide();
+	$.ajax({url: "http://localhost:5000/Combinations.json", data: {}, success: function( data ) {
+		window.mrcombinations = data.Combinations;
+		for (i in window.mrcombinations) {
+			var combo = window.mrcombinations[parseInt(i)];
+			if (JSON.stringify(combo.AssetCombination) == JSON.stringify(window.mrstate.AssetCombination)) {
+				// display stats
+				$("#combostats").show();
+				$("#growth").text(combo.Stats.Growth);
+				$("#lowestreturn").text(combo.Stats.LowestReturn);
+				$("#annualizedrate").text(combo.Stats.AnnualizedRateOfReturn);
+			}
+		}
+	}, dataType: "json", error: function( jqXHR, textStatus, errorThrown ) { alert("Error " + textStatus + " " + errorThrown); }});
+
+	$("#tolerance").val(window.mrstate.RiskAmount);
+	$("#assets").empty();
+	$.each(window.mrstate.AssetCombination, function(i, item) {
+		$('#assets').append($('<option>', {
+		value: i,
+		text: item
+		}));
+	});
+	if (window.mrstate.AssetCombination.length == 0)
+	{
+		$("#assetprice").hide();
+		return;
+	}
+	setActiveAsset();
+	$("#assetprice").show();
+}
+
+function setActiveAsset()
+{
+	var asset = $("#assets").find(":selected").text();
+	$("#asset").text(asset);
+	$("#price").val(window.mrstate.AssetPrices[asset]);
+	$("#position").val(window.mrstate.AssetPositions[asset]);
+	$("#nonbond").hide();
+	if (asset.substring(asset.length - 4, asset.length) != "Bond")
+	{
+		$("#nonbond").show();
+	}
+}
+
+function saveState()
+{
+	window.mrstate.RiskAmount = $("#tolerance").val();
+	var asset = $("#assets").find(":selected").text();
+	if (asset.length > 0)
+	{
+		window.mrstate.AssetPrices[asset] = parseFloat($("#price").val());
+		window.mrstate.AssetPositions[asset] = parseFloat($("#position").val());
+	}
+}
+
+function addAsset()
+{
+	var asset = $("#addthisasset").find(":selected").text();
+	if (window.mrstate.AssetCombination.indexOf(asset) >= 0)
+	{
+		alert(asset + " already exists.");
+		return;
+	}
+	window.mrstate.AssetCombination.push(asset);
+	window.mrstate.AssetCombination.sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
+	if (!(asset in window.mrstate.AssetPrices) || !(asset in window.mrstate.AssetPositions))
+	{
+		window.mrstate.AssetPrices[asset] = 9.99;
+		window.mrstate.AssetPositions[asset] = 0;
+	}
+	init();
+}
+
+function removeAsset()
+{
+	var asset = $("#assets").find(":selected").text();
+	var index = window.mrstate.AssetCombination.indexOf(asset);
+	if (index >= 0)
+	{
+		window.mrstate.AssetCombination.splice(index, 1);
+	}
+	init();
+}
+
+function persistState()
+{
+	var jsonText = JSON.stringify(window.mrstate);
+	// Send request to server
+	$.post("http://localhost:5000/marketrisk", { state: jsonText, report: false }, function( data ) { });
+}
+
+function validateState()
+{
+	if (window.mrstate.AssetCombination.length == 0) {
+		alert("Please add at least one asset.");
+		return false;
+	}
+	if (parseFloat(window.mrstate.RiskAmount) < 1) {
+		alert("Please set your risk tolerance to at least $1.");
+		return false;
+	}
+	return true;
+}
+
+function createReport()
+{
+	if (!validateState()) return;
+	
+	// v2.0 Copies State.json to Clipboard
+	var jsonText = JSON.stringify(window.mrstate);
+	navigator.clipboard.writeText(jsonText);
+
+	// Alert the copied text
+	//alert("Copied the State.json to clipboard. Enter this text into a new State.json file and run the console app to calculate.");
+	
+	// Send request to server
+	$.post("http://localhost:5000/marketrisk", { state: jsonText }, function( data ) { openReport(); });
+}
+
+function loadState(files)
+{
+	files.item(0).text().then((value) => {
+		window.mrstate = JSON.parse(value);
+		init();
+	});
+}
+
+function loadStateFromServer()
+{
+	$.ajax({url: "http://localhost:5000/State.json", data: {}, success: function( data ) {
+		window.mrstate = data;
+		init();
+	}, dataType: "json", error: function( jqXHR, textStatus, errorThrown ) { init(); }});
+}
+	
+function openReport()
+{
+	window.open('http://localhost:5000/Report.html');
+}
+
+function passData()
+{
+	if (window.mrchild) {
+		window.mrchild.window.mrstate = window.mrstate;
+	} else {
+		opener.window.mrstate = window.mrstate;
+	}
+}
+
+function combine(array, length) {
+    function c(l, r) {
+        var ll = l.slice();
+        if (r.length === length) {
+            result.push(r);
+            return;
+        }
+        while (ll.length) {
+            c(ll, r.concat(ll.shift()));
+        }
+    }
+    var result = [];
+    c(array, []);
+    return result;
+}
+
+function findBestCombo()
+{
+	var allAssets = [];
+	var excludedAssets = [];
+	$("#find-popup input").each(function (i){if ($(this).val()){allAssets.push($(this).val())}});
+	$("#find-popup input:checked").each(function (i){if ($(this).val()){excludedAssets.push($(this).val())}});
+	var chosenAssets = [];
+	for (i in allAssets) {
+		chosenAssets.push(allAssets[i]);
+	}
+	for (i in excludedAssets) {
+		const index = chosenAssets.indexOf(excludedAssets[i]);
+		if (index > -1) { // only splice array when item is found
+			chosenAssets.splice(index, 1); // 2nd parameter means remove one item only
+		}
+	}
+	if (chosenAssets.length < 1) {
+		alert("Please select at least one asset.");
+		return;
+	}
+	//alert(chosenAssets.length);
+	var chosenCombos = [];
+	for (var len = 1; len <= chosenAssets.length; len++)
+	{
+		var arr = combine(chosenAssets, len);
+		for (i in arr) {
+			chosenCombos.push(arr[i]);
+		}
+	}
+	//console.log(JSON.stringify(chosenCombos));
+	var maxCombo = -1;
+	var maxReturn = -100;
+	for (i in chosenCombos) {
+		for (j in window.mrcombinations) {
+			if (JSON.stringify(chosenCombos[i]) == JSON.stringify(window.mrcombinations[j].AssetCombination)) {
+				if (window.mrcombinations[j].Stats.AnnualizedRateOfReturn > maxReturn) {
+					maxReturn = window.mrcombinations[j].Stats.AnnualizedRateOfReturn;
+					maxCombo = i;
+				}
+			}
+		}
+	}
+	if (maxCombo >= 0) {
+		window.mrstate.AssetCombination = chosenCombos[maxCombo];
+	}
+	else {
+		alert("We could not find a combination.");
+		return;
+	}
+	$.magnificPopup.close();
+	init();
+}
+
+function firstLoad()
+{
+	$('.mfp-inline').magnificPopup({
+	  type:'inline',
+	  midClick: true // Allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source in href.
+	});
+	loadStateFromServer();
+	window.onbeforeunload = persistState;
+}
+</script>
+<img src="NewLogo.png" alt="MarketRisk Logo" style="float: left; width: 81px; height: 75px; margin-right: 24px; margin-bottom: 16px;" /><h1>Welcome to MarketRisk</h1>
+<p>Let's set up your portfolio.&nbsp;| Load from <span style="color: #666;">State.json</span> file: <input type="file" id="input" onchange="loadState(this.files);" /></p>
+<p>Set up your goal first. Use <a href="javascript:window.mrchild=window.open('PortfolioPlanner.html');passData();">Portfolio Planner</a>.</p>
+<hr />
+<div style="float: left; width: 200px; height: 240px;">
+Portfolio Assets:<br />
+<select id="assets" onchange="setActiveAsset();">
+</select>
+<button onclick="removeAsset();">-</button>
+<br />
+<br /><a href="#find-popup" class="mfp-inline">Find Best Combo</a>
+<br /><br />Add:<br />
+<select id="addthisasset">
+<option>CABond</option>
+<option>Dow</option>
+<option>Gold</option>
+<option>Palladium</option>
+<option>Platinum</option>
+<option>Silver</option>
+<option>SP500</option>
+<option>TSX</option>
+<option>USBond</option>
+</select>
+<br />
+<button style="margin-top: 6px;" onclick="addAsset();">+</button>
+</div>
+<div style="height: 240px;">
+<div>
+Risk Tolerance: <input type="number" min="1" step="any" id="tolerance" onchange="saveState();" /> * Prices are in USD.
+</div>
+<hr />
+<div id="assetprice">
+<h2 id="asset">First</h2>
+<div id="nonbond">Price of the asset this year: <input type="number" min="0" step="any" id="price" onchange="saveState();" /></div>
+<br />
+<div>Present position size: <input type="number" min="0" step="any" id="position" onchange="saveState();" /></div>
+</div>
+</div>
+<div>
+<div style="margin-top: 20px; text-align: center;">
+<hr />
+<button style="font-weight: bold; padding: 12px;" onclick="createReport();">Create Report</button>
+</div>
+<div id="combostats" style="text-align: center;"><hr />
+<h2>Asset Combination Stats</h2>
+<div><span style="font-weight: bold;">50-Year Growth:&nbsp;</span><span id="growth"></span><span>X</span></div>
+<div><span style="font-weight: bold;">50-Year Lowest Annual Return:&nbsp;</span><span id="lowestreturn"></span><span>%</span></div>
+<div><span style="font-weight: bold;">50-Year Average Annual Return:&nbsp;</span><span id="annualizedrate"></span><span>%</span></div>
+</div>
+<div><hr />
+Copyright &copy; Dacris Software Inc. All Rights Reserved. <a href="http://www.dacris.com">www.dacris.com</a>
+</div>
+</div>
+<div id="find-popup" class="white-popup mfp-hide">
+	<h4>Search for Best Combination</h4>
+	<div>Exclude the following assets from search:</div><br />
+	<!-- alphabetical order -->
+	<input type="checkbox" id="cabond" name="cabond" value="CABond" /><label for="cabond"> CABond</label><br />
+	<input type="checkbox" id="dow" name="dow" value="Dow" /><label for="dow"> Dow</label><br />
+	<input type="checkbox" id="gold" name="gold" value="Gold" /><label for="gold"> Gold</label><br />
+	<input type="checkbox" id="palladium" name="palladium" value="Palladium" /><label for="palladium"> Palladium</label><br />
+	<input type="checkbox" id="platinum" name="platinum" value="Platinum" /><label for="platinum"> Platinum</label><br />
+	<input type="checkbox" id="silver" name="silver" value="Silver" /><label for="silver"> Silver</label><br />
+	<input type="checkbox" id="sp500" name="sp500" value="SP500" /><label for="sp500"> SP500</label><br />
+	<input type="checkbox" id="tsx" name="tsx" value="TSX" /><label for="tsx"> TSX</label><br />
+	<input type="checkbox" id="usbond" name="usbond" value="USBond" /><label for="usbond"> USBond</label><br /><br />
+	<button id="search" onclick="findBestCombo();">Search</button>
+</div>
+</body>
+</html>

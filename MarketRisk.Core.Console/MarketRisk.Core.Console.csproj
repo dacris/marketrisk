@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RollForward>LatestMajor</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MarketRisk.GUI\State.cs" Link="State.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\MarketRisk.GUI\ETFs.json" Link="ETFs.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.GUI\ReportTemplate.html" Link="ReportTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MarketRisk.Testing.Std\MarketRisk.Testing.Std.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,213 @@
+<html>
+<head>
+<link rel="icon" type="image/png" href="NewLogo.png"/>
+<title>MarketRisk Portfolio Planner</title>
+<style>
+* { font-family: Verdana, Arial, Sans-serif; font-size: 100%; }
+h1 { font-size: 150%; color: #669; }
+h2 { font-size: 120%; }
+hr { border: 1px solid #ccc; border-bottom: none; border-left: none; border-right: none; }
+body { margin: 0; padding: 18px; }
+</style>
+<script type="text/javascript" src="jquery.js"></script>
+</head>
+<body onload="window.initState();">
+<script type="text/javascript">
+var startingState = {"AssetCombination":[],"AssetPrices":{},"AssetPositions":{},"BondYields":{"USBond":[0.5],"CABond":[0.5]},"AssetExchangeRates":{"CABond":1.1,"USBond":1.0},"RiskAmount":"0"};
+if (!window.mrstate) {
+    window.mrstate = startingState;
+}
+
+window.initState = function() {
+    if (!window.mrstate.PlanInput)
+    {
+        return;
+    }
+    $("#currentAmount").val(window.mrstate.PlanInput.CurrentInvestedAmount);
+    $("#currentIncome").val(window.mrstate.PlanInput.NetIncome);
+    $("#currentSavings").val(window.mrstate.PlanInput.CurrentSavingsAmount);
+    $("#inflation").val(window.mrstate.PlanInput.InflationRate);
+    $("#returnOnInvestment").val(window.mrstate.PlanInput.RateOfReturnOnInvestments);
+    $("#returnOnSavings").val(window.mrstate.PlanInput.RateOfReturnOnSavings);
+    $("#goalType").val((window.mrstate.PlanInput.TypeOfGoal?.toString() ?? window.mrstate.PlanInput.Goal.toString()));
+    $("#goalAmount").val(window.mrstate.PlanInput.GoalAmountOrIncome);
+    $("#marginOfSafety").val(window.mrstate.PlanInput.MarginOfSafety);
+    $("#risk").val(window.mrstate.PlanInput.PercentRisked);
+    $("#years").val(window.mrstate.PlanInput.NumberOfYears);
+    calculate();
+}
+
+function loadState(files) {
+	files.item(0).text().then((value) => {
+		window.mrstate = JSON.parse(value);
+        window.initState();
+	});
+}
+
+function calculate() {
+    window.mrstate.PlanInput = {};
+    window.mrstate.PlanInput.CurrentInvestedAmount = parseFloat($("#currentAmount").val());
+    window.mrstate.PlanInput.NetIncome = parseFloat($("#currentIncome").val());
+    window.mrstate.PlanInput.CurrentSavingsAmount = parseFloat($("#currentSavings").val());
+    window.mrstate.PlanInput.InflationRate = parseFloat($("#inflation").val());
+    window.mrstate.PlanInput.RateOfReturnOnInvestments = parseFloat($("#returnOnInvestment").val());
+    window.mrstate.PlanInput.RateOfReturnOnSavings = parseFloat($("#returnOnSavings").val());
+    window.mrstate.PlanInput.TypeOfGoal = parseInt($("#goalType").val());
+    window.mrstate.PlanInput.Goal = window.mrstate.PlanInput.TypeOfGoal;
+    window.mrstate.PlanInput.GoalAmountOrIncome = parseFloat($("#goalAmount").val());
+    window.mrstate.PlanInput.MarginOfSafety = parseFloat($("#marginOfSafety").val());
+    window.mrstate.PlanInput.PercentRisked = parseFloat($("#risk").val());
+    window.mrstate.PlanInput.NumberOfYears = parseFloat($("#years").val());
+
+    // Validation
+    var input = window.mrstate.PlanInput;
+    if (isNaN(input.CurrentInvestedAmount)
+        || isNaN(input.NetIncome)
+        || isNaN(input.CurrentSavingsAmount)
+        || isNaN(input.InflationRate)
+        || isNaN(input.RateOfReturnOnInvestments)
+        || isNaN(input.RateOfReturnOnSavings)
+        || input.TypeOfGoal < 0
+        || input.TypeOfGoal > 1
+        || isNaN(input.TypeOfGoal)
+        || isNaN(input.GoalAmountOrIncome)
+        || isNaN(input.MarginOfSafety)
+        || isNaN(input.PercentRisked)
+        || isNaN(input.NumberOfYears))
+    {
+        $("#output").val("Incomplete input.");
+        return;
+    }
+    if (input.NumberOfYears <= 0)
+    {
+        return;
+    }
+    if (input.GoalAmountOrIncome <= 0)
+    {
+        return;
+    }
+    if (input.PercentRisked < 5)
+    {
+        input.PercentRisked = 5;
+    }
+    if (input.PercentRisked > 50)
+    {
+        input.PercentRisked = 50;
+    }
+
+    var toleranceOfRisk = input.PercentRisked / 100.0;
+    var investmentRisk = 0.5;
+    if (input.TypeOfGoal == 0)
+    {
+        // 1. Determine the amounts we require (PV)
+        var goalAmount = input.GoalAmountOrIncome;
+        var maturityAmount = input.GoalAmountOrIncome / (0.01 * (input.RateOfReturnOnInvestments - input.InflationRate - 2.0)); // Safe withdrawal rate = ROR - Inflation - 2%
+        var rateOfSavingsDepreciation = 1 + (input.InflationRate - Math.min(input.RateOfReturnOnSavings, input.InflationRate - 0.25)) / 100.0;
+        var nYearsToMaturity = Math.log(maturityAmount / ((toleranceOfRisk / investmentRisk) * goalAmount)) / Math.log(1 + 0.01 * (input.RateOfReturnOnInvestments - input.InflationRate));
+        var nYearsOfSavings = Math.log(1 - (1 - toleranceOfRisk / investmentRisk) * goalAmount * (1 - rateOfSavingsDepreciation) / input.GoalAmountOrIncome) / Math.log(rateOfSavingsDepreciation);
+        while (nYearsToMaturity > nYearsOfSavings)
+        {
+            goalAmount *= 1.025;
+            nYearsToMaturity = Math.log(maturityAmount / ((toleranceOfRisk / investmentRisk) * goalAmount)) / Math.log(1 + 0.01 * (input.RateOfReturnOnInvestments - input.InflationRate));
+            nYearsOfSavings = Math.log(1 - (1 - toleranceOfRisk / investmentRisk) * goalAmount * (1 - rateOfSavingsDepreciation) / input.GoalAmountOrIncome) / Math.log(rateOfSavingsDepreciation);
+        }
+        window.AmountInvested = (input.MarginOfSafety * 0.01 + 1) * goalAmount * toleranceOfRisk / investmentRisk;
+        window.AmountSaved = (input.MarginOfSafety * 0.01 + 1) * goalAmount * (1 - toleranceOfRisk / investmentRisk);
+        window.YearsOfSavings = Math.log(1 - window.AmountSaved * (1 - rateOfSavingsDepreciation) / input.GoalAmountOrIncome) / Math.log(rateOfSavingsDepreciation);
+    }
+    else if (input.TypeOfGoal == 1)
+    {
+        // 1. Determine the amounts we require (PV)
+        window.AmountInvested = (input.MarginOfSafety * 0.01 + 1) * input.GoalAmountOrIncome * toleranceOfRisk / investmentRisk;
+        window.AmountSaved = (input.MarginOfSafety * 0.01 + 1) * input.GoalAmountOrIncome * (1 - toleranceOfRisk / investmentRisk);
+    }
+    // 2. Calculate how we will get there
+    var diffSav = window.AmountSaved - input.CurrentSavingsAmount;
+    var diffInv = window.AmountInvested - input.CurrentInvestedAmount;
+    window.AnnualSaved = findAnnualAmount(input, diffSav, input.CurrentSavingsAmount, window.AmountSaved, 1 + 0.01 * (input.RateOfReturnOnSavings - input.InflationRate));
+    window.AnnualInvested = findAnnualAmount(input, diffInv, input.CurrentInvestedAmount, window.AmountInvested, 1 + 0.01 * (input.RateOfReturnOnInvestments - input.InflationRate));
+    createOutput();
+
+    saveState();
+}
+
+function saveState() {
+  	// Send request to server
+	$.post("http://localhost:5000/marketrisk", { state: JSON.stringify(window.mrstate), report: false }, function( data ) {  });
+}
+
+function findAnnualAmount(input, diff, start, end, ror)
+{
+    var annual = diff / (100 * input.NumberOfYears);
+    var current = start;
+    var result = current;
+    while (result < end)
+    {
+        for (var yr = 1; yr <= input.NumberOfYears; yr++)
+        {
+            current = current * ror + annual / Math.pow(1 + 0.01 * input.InflationRate, yr);
+        }
+        result = current;
+        current = start;
+        annual *= 1.025;
+    }
+    return annual;
+}
+
+function createOutput()
+{
+    var outputString = "";
+    outputString += "Final Amount Saved*: " + window.AmountSaved.toFixed(2);
+    outputString += "\nFinal Amount Invested*: " + window.AmountInvested.toFixed(2);
+    outputString += "\nAnnual Savings Contribution: " + window.AnnualSaved.toFixed(2);
+    outputString += "\nAnnual Investment Contribution: " + window.AnnualInvested.toFixed(2);
+    if (window.mrstate.PlanInput.TypeOfGoal == 0)
+    {
+        outputString += "\nSpend your savings first.";
+        outputString += "\nSavings will last " + window.YearsOfSavings.toFixed(1) + " years.";
+    }
+    if (window.mrstate.PlanInput.NetIncome < window.AnnualSaved + window.AnnualInvested)
+    {
+        outputString += "\nYour goal is in jeopardy! Your net income is too low for your annual contribution. Try increasing the length of time or increasing your income.";
+    }
+    if (window.mrstate.PlanInput.PercentRisked >= 50)
+    {
+        outputString += "\nYou are risking a lot. You can still reach your goal with less risk.";
+    }
+    if (window.AnnualSaved <= 0 && window.AnnualInvested <= 0)
+    {
+        outputString += "\nTry a bigger goal. You've already achieved this one.";
+    }
+    outputString += "\n* Final amounts are present value.";
+    $("#output").val(outputString);
+}
+</script>
+<img src="NewLogo.png" alt="MarketRisk Logo" style="float: left; width: 81px; height: 75px; margin-right: 24px; margin-bottom: 16px;" /><h1>Welcome to Portfolio Planner</h1>
+<p>Enter the details of your financial goal.&nbsp;| Load State.json from file: <input type="file" id="input" onchange="loadState(this.files);" /></p>
+<hr />
+<div style="float: left; width: 50%;">
+<h2>Input</h2>
+Current Invested Amount: <input type="number" step="any" id="currentAmount" onchange="calculate();" />
+<br />Current Net Income: <input type="number" step="any" id="currentIncome" onchange="calculate();" />
+<br />Current Savings: <input type="number" step="any" id="currentSavings" onchange="calculate();" />
+<br />Rate of Inflation (%/yr): <input type="number" step="any" id="inflation" onchange="calculate();" />
+<br />Rate of Return on Investment (%/yr): <input type="number" step="any" id="returnOnInvestment" onchange="calculate();" />
+<br />Rate of Return on Savings (%/yr): <input type="number" step="any" id="returnOnSavings" onchange="calculate();" />
+<br />Goal Type: <select id="goalType" onchange="calculate();"><option value="0">Retirement Income</option><option value="1">Major Purchase</option></select>
+<br />Goal Amount: <input type="number" step="any" id="goalAmount" onchange="calculate();" />
+<br />Margin of Safety (%): <input type="number" step="any" id="marginOfSafety" onchange="calculate();" />
+<br />% of Goal Risked: <input type="number" step="any" id="risk" onchange="calculate();" />
+<br />Years Until Accomplishment: <input type="number" step="any" id="years" onchange="calculate();" />
+</div>
+<div>
+<h2 style="margin-top: 26px;">Output</h2>
+<textarea id="output" cols="72" rows="20" readonly="readonly">
+</textarea>
+</div>
+<div style="width: 100%; display: block; float: left;">
+<div><hr />
+Copyright &copy; Dacris Software Inc. All Rights Reserved. <a href="http://www.dacris.com">www.dacris.com</a>
+</div>
+</div>
+</body>
+</html>

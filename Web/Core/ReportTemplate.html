@@ -1,0 +1,31 @@
+<html>
+<head><title>MarketRisk: Portfolio Report</title>
+<style>
+* { font-family: Verdana, Arial, Sans-serif; font-size: 100%; }
+h1 { font-size: 150%; color: #669; }
+h2 { font-size: 120%; }
+table { border: 1px solid #ccc; }
+th { background-color: #f3f3f3; border: 1px solid #ccc; padding: 4px; }
+td { border: 1px solid #ccc; padding: 4px; }
+hr { border: 1px solid #ccc; border-bottom: none; border-left: none; border-right: none; }
+</style>
+</head>
+<body>
+<h1>MarketRisk: <span style="color: #3366cc">Portfolio Report</span></h1>
+<hr />
+<p>Date Created: @@DATE</p>
+<h2>Risk Profile</h2>
+<strong>Total Risk Amount: </strong><span>@@RISK</span>
+<h2>Assets Selected</h2>
+<table>
+<tr><th>Asset</th><th>Market Price</th><th>Amount to Invest</th><th>Amount Risked</th></tr>
+@@ASSET_ROWS
+</table>
+<h2>Performance</h2>
+<pre>@@PORTFOLIO_STATS</pre>
+<h2>Low-Fee ETFs to Buy</h2>
+@@ETFS
+<hr />
+<footer>Copyright &copy; Dacris Software Inc. All Rights Reserved. <a href="http://www.dacris.com">www.dacris.com</a></footer>
+</body>
+</html>

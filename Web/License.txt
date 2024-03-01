@@ -1,0 +1,22 @@
+END-USER LICENSE AGREEMENT FOR DACRIS SOFTWARE
+
+IMPORTANT READ CAREFULLY: This Dacris Software End-User License Agreement (EULA) is a legal agreement between you (either an individual or a single entity) and Dacris Software for the Dacris Software products which may include online or electronic documentation ("Software") provided in the Dacris Software product you have acquired. By installing, copying, or otherwise using the Software you agree to be bound by the terms of this EULA. If you do not agree to the terms of this Agreement, you are not authorized to use the Software.
+
+The Software is protected by copyright laws and international copyright treaties, as well as other intellectual property laws and treaties. The Software is licensed, not sold. Dacris Software reserves all rights that are not expressly granted to you in this EULA.
+
+1. GRANT OF LICENSE. This EULA grants you the following rights: Dacris Software grants to you the right to use copies of the Software only as part of the Dacris Software product that such Software was included.
+
+2.  RESTRICTIONS.
+--You must maintain all copyright notices on all copies of the Software.
+--You may not distribute copies of the Software to third parties.
+--You may not reverse engineer, decompile, or disassemble the Software, except and only to the extent that such activity is expressly permitted by applicable law notwithstanding this limitation.
+--You may not rent, lease, or lend the Software.
+--You may permanently transfer your rights under this EULA only in conjunction with a permanent transfer of your copy of the Dacris Software product in which the Software was included.
+
+3.  TERMINATION. Your rights under this EULA terminate upon the termination of your Dacris Software product EULA, or without prejudice to any other rights, Dacris Software may terminate this EULA at any time, for any reason, at its sole discretion. In such event, you must destroy all copies of the Software.
+
+4.  COPYRIGHT. All title and copyrights in and to the Software and any copies thereof are owned by Dacris Software or its suppliers.
+
+5.  NO WARRANTY. Any use of the Software is at your own risk.  To the maximum extent permitted by applicable law, Dacris Software and its suppliers disclaim all warranties and conditions, either express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, and noninfringement.
+
+6.  NO LIABILITY FOR CONSEQUENTIAL DAMAGES. To the maximum extent permitted by applicable law, in no event shall Dacris Software or its suppliers be liable for any special, incidental, indirect, or consequential damages whatsoever (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or any other pecuniary loss) arising out of the use of or inability to use the Software, even if Dacris Software has been advised of the possibility of such damages.  Because some jurisdictions do not allow the exclusion or limitation of liability for consequential or incidental damages, the above limitation may not apply to you.
