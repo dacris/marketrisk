@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MarketRisk.Portfolio\Asset.cs" Link="Asset.cs" />
+    <Compile Include="..\MarketRisk.Portfolio\MoneySupply.cs" Link="MoneySupply.cs" />
+    <Compile Include="..\MarketRisk.Portfolio\Portfolio.cs" Link="Portfolio.cs" />
+    <Compile Include="..\MarketRisk.Portfolio\PortfolioHistory.cs" Link="PortfolioHistory.cs" />
+    <Compile Include="..\MarketRisk.Portfolio\PortfolioStats.cs" Link="PortfolioStats.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MarketRisk.Recommend.Std\MarketRisk.Recommend.Std.csproj" />
+  </ItemGroup>
+
+</Project>

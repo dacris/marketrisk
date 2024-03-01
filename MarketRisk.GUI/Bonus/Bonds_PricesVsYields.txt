@@ -1,0 +1,6 @@
+https://www.youtube.com/watch?v=I7FDx4DPapw
+
+For a zero-coupon bond...
+
+Price = 100 / YieldRate ^ DurationYrs
+E.g. 100 / 1.035^10 where yield is 3.5% and 10 is 10 years to maturity
