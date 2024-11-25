@@ -81,7 +81,7 @@ namespace MarketRisk.GUI
 
         private void PortfolioManager_Load(object sender, EventArgs e)
         {
-            assetConfig = JsonConvert.DeserializeObject<Dictionary<string, AssetConfig>>(File.ReadAllText("Data/AssetConfig.json"));
+            assetConfig = JsonConvert.DeserializeObject<Dictionary<string, AssetConfig>>(File.ReadAllText("Data\\AssetConfig.json"));
             tester.IntegrationTest_OptimizeAssetCombinations(
                 ConfigurationManager.AppSettings["MaxSalePercent"],
                 ConfigurationManager.AppSettings["RealRiskGrowthRatePercent"]
@@ -344,8 +344,8 @@ Please consult with a qualified financial advisor before making your investment 
                 throw new InvalidOperationException();
             }
             IRecommendationEngine rec = tester.RiskEngine;
-            double ltrr = ph.LTRR[asset];
             assetPrices.TryGetValue(asset, out double assetPrice);
+            double ltrr = ph.LTRR[asset];
             double riskRatio = rec.CalculateRiskRatio(MoneySupply.CalculateM2AdjustedToAsset(DateTime.Now.Year - Config.StartYear, ltrr), assetPrice, ph.AssetAverageRisks[asset], ph.AverageM2toPriceRatios[asset], ph.M2toPriceAmplitude[asset], ph.AssetIncomeRate[asset]);
             assetPositions.TryGetValue(asset, out double position);
             amountToInvest = rec.FindRecommendedPosition(position, allowedRisk, riskRatio, assetCombination.Count);
@@ -364,33 +364,41 @@ Please consult with a qualified financial advisor before making your investment 
                 MessageBox.Show("Please click Calculate.", "Need to Calculate");
                 return;
             }
-            tester.CreateReport(ReportType.HTML, portfolio, assetPrices, assetCombination, textBox2.Text, textBox1.Text, assetPositions);
-            ProcessShellex.Start("Report.html");
+            //determine ideal prices
+            var assetIdealPrices = new Dictionary<string, double>();
+            foreach (var asset in assetCombination)
+            {
+                AssetUtils.PredictAssetPrice(tester, Config.StartYear, asset, out double highRisk, out double medRisk, out double lowRisk);
+
+                assetIdealPrices[asset] = medRisk / Constants.MarginOfSafety;
+            }
+            tester.CreateReport(ReportType.HTML, portfolio, assetPrices, assetCombination, textBox2.Text, textBox1.Text, assetPositions, assetIdealPrices);
+            Process.Start("Report.html");
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            ProcessShellex.Start("Readme.txt");
+            Process.Start("Readme.txt");
         }
 
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
-            ProcessShellex.Start("License.txt");
+            Process.Start("License.txt");
         }
 
         private void toolStripMenuItem5_Click(object sender, EventArgs e)
         {
-            ProcessShellex.Start("https://finance.yahoo.com/");
+            Process.Start("https://finance.yahoo.com/");
         }
 
         private void toolStripMenuItem4_Click(object sender, EventArgs e)
         {
-            ProcessShellex.Start("https://www.kitco.com/charts/livegold.html");
+            Process.Start("https://www.kitco.com/charts/livegold.html");
         }
 
         private void toolStripMenuItem6_Click(object sender, EventArgs e)
         {
-            ProcessShellex.Start("Help/Help.html");
+            Process.Start("Help\\Help.html");
         }
 
         private void toolStripMenuItem7_Click(object sender, EventArgs e)
@@ -431,7 +439,7 @@ Please consult with a qualified financial advisor before making your investment 
                 return;
             }
             tester.CreateReport(ReportType.CSV, portfolio, assetPrices, assetCombination, textBox2.Text, textBox1.Text, assetPositions);
-            ProcessShellex.Start("Report.csv");
+            Process.Start("Report.csv");
         }
     }
 }

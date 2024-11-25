@@ -1,6 +1,6 @@
 ﻿namespace MarketRisk.Recommend
 {
-    class Constants
+    public class Constants
     {
         public const double MarginOfSafety = 1.15;
         public const double MaxRisk = 0.075;

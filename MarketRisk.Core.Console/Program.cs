@@ -18,6 +18,7 @@ namespace MarketRisk.Core.Console
 
         private static readonly Tester tester = new Tester();
         private static List<string> assetCombination = new List<string>();
+        private static Dictionary<string, double> assetIdealPrices = new Dictionary<string, double>();
         private static Dictionary<string, double> assetPrices = new Dictionary<string, double>();
         private static Dictionary<string, double> assetPositions = new Dictionary<string, double>();
         private static Dictionary<string, double> assetExchangeRates = new Dictionary<string, double>();
@@ -40,8 +41,8 @@ namespace MarketRisk.Core.Console
                 throw new InvalidOperationException();
             }
             IRecommendationEngine rec = tester.RiskEngine;
-            double ltrr = ph.LTRR[asset];
             assetPrices.TryGetValue(asset, out double assetPrice);
+            double ltrr = ph.LTRR[asset];
             double riskRatio = rec.CalculateRiskRatio(MoneySupply.CalculateM2AdjustedToAsset(DateTime.Now.Year - StartYear, ltrr), assetPrice, ph.AssetAverageRisks[asset], ph.AverageM2toPriceRatios[asset], ph.M2toPriceAmplitude[asset], ph.AssetIncomeRate[asset]);
             assetPositions.TryGetValue(asset, out double position);
             amountToInvest = rec.FindRecommendedPosition(position, allowedRisk, riskRatio, assetCombination.Count);
@@ -77,6 +78,13 @@ namespace MarketRisk.Core.Console
                 return;
             }
             //test
+            //determine ideal prices
+            foreach (var asset in assetCombination)
+            {
+                AssetUtils.PredictAssetPrice(tester, StartYear, asset, out double highRisk, out double medRisk, out double lowRisk);
+
+                assetIdealPrices[asset] = medRisk / Constants.MarginOfSafety;
+            }
 
             try
             {
@@ -101,7 +109,7 @@ namespace MarketRisk.Core.Console
 
             portfolio.BalanceAllocationsForMaxRisk(allowedRisk);
 
-            tester.CreateReport(ReportType.HTML, portfolio, assetPrices, assetCombination, riskAmount, tester.PortfolioHistories.Where(s => Enumerable.SequenceEqual(s.Key, assetCombination)).First().Value.Stats.StatText, assetPositions);
+            tester.CreateReport(ReportType.HTML, portfolio, assetPrices, assetCombination, riskAmount, tester.PortfolioHistories.Where(s => Enumerable.SequenceEqual(s.Key, assetCombination)).First().Value.Stats.StatText, assetPositions, assetIdealPrices);
             //System.Diagnostics.Process.Start("Report.html");
         }
 

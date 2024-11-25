@@ -50,7 +50,7 @@ namespace MarketRisk.Recommend.Planning
 
             double toleranceOfRisk = input.PercentRisked / 100.0;
             double investmentRisk = 0.5;
-            if (input.TypeOfGoal == GoalType.RetirementIncome)
+            if (input.Goal == GoalType.RetirementIncome)
             {
                 // 1. Determine the amounts we require (PV)
                 double goalAmount = input.GoalAmountOrIncome.Value;
@@ -73,7 +73,7 @@ namespace MarketRisk.Recommend.Planning
                 YearsOfSavings = Math.Log(1 - AmountSaved * (1 - rateOfSavingsDepreciation) / input.GoalAmountOrIncome.Value) / Math.Log(rateOfSavingsDepreciation);
                 HasValue = true;
             }
-            else if (input.TypeOfGoal == GoalType.MajorPurchase)
+            else if (input.Goal == GoalType.MajorPurchase)
             {
                 // 1. Determine the amounts we require (PV)
                 AmountInvested = (input.MarginOfSafety * 0.01 + 1) * input.GoalAmountOrIncome.Value * toleranceOfRisk / investmentRisk;
@@ -121,7 +121,7 @@ namespace MarketRisk.Recommend.Planning
             sb.AppendLine($"Final Amount Invested*: ${AmountInvested:N2}");
             sb.AppendLine($"Annual Savings Contribution: ${AnnualSaved:N2}");
             sb.AppendLine($"Annual Investment Contribution: ${AnnualInvested:N2}");
-            if (Input.TypeOfGoal == GoalType.RetirementIncome)
+            if (Input.Goal == GoalType.RetirementIncome)
             {
                 sb.AppendLine("Spend your savings first.");
                 sb.AppendLine($"Savings will last {YearsOfSavings:N1} years.");

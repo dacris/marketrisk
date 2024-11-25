@@ -53,23 +53,25 @@ namespace MarketRisk.Portfolio
                 { "TSX", 0.0075 }
             };
 
-        public ReadOnlyIndexedProperty<string, double> LTRR
-        {
-            get
-            {
-                return new ReadOnlyIndexedProperty<string, double>((asset) => Math.Pow(AssetPriceHistory[asset][AssetPriceHistory[asset].Count - 1] / AssetPriceHistory[asset][0], 1.0 / (AssetPriceHistory[asset].Count - 1.0)) - AssetSupplyIncrease.FirstOrDefault(k => k.Key == asset).Value);
+		public ReadOnlyIndexedProperty<string, double> LTRR
+		{
+			get
+			{
+				return new ReadOnlyIndexedProperty<string, double>((asset) => Math.Pow(AssetPriceHistory[asset][AssetPriceHistory[asset].Count - 1] / AssetPriceHistory[asset][0], 1.0 / (AssetPriceHistory[asset].Count - 1.0)) - AssetSupplyIncrease.FirstOrDefault(k => k.Key == asset).Value);
             }
-        }
+		}
 
-        public PortfolioStats Stats { get; set; }
+		public PortfolioStats Stats { get; set; }
 
 		public void CalculateStats()
 		{
 			// Call this after allocation history is calculated
 			Stats = new PortfolioStats();
-			Stats.AnnualReturn = new List<double>();
-			Stats.AnnualReturn.Add(1.0);
-			for (int year = 1; year < TotalYears; year++)
+            Stats.AnnualReturn = new List<double>
+            {
+                1.0
+            };
+            for (int year = 1; year < TotalYears; year++)
             {
 				double totalInvestedPrevYear = AllocationHistory[year - 1].Assets.Sum(a => a.AmountInvested);
 				double annualReturn = 0;
@@ -164,7 +166,7 @@ namespace MarketRisk.Portfolio
 				{
 					foreach (string assetType in AllowedAssets)
 					{
-						double ltrr = LTRR[assetType];
+                        double ltrr = LTRR[assetType];
 						double riskRatio = rec.CalculateRiskRatio(
 							MoneySupply.CalculateM2AdjustedToAsset(year, ltrr),
 							AssetPriceHistory[assetType][year],

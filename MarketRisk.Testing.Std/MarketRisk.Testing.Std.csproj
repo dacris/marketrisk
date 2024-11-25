@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +14,9 @@
 
   <ItemGroup>
     <Content Include="..\MarketRisk.Testing\Data\AssetConfig.json" Link="Data\AssetConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MarketRisk.Testing\Data\Bitcoin.txt" Link="Data\Bitcoin.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\MarketRisk.Testing\Data\CABond.txt" Link="Data\CABond.txt">

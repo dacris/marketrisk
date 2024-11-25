@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +62,7 @@ namespace MarketRisk.Testing
             jsonOut.Append("]}");
             File.WriteAllText("Combinations.json", jsonOut.ToString());
         }
-        public void IntegrationTest_OptimizeAssetCombinations(string maxSalePercentSetting, string realRiskGrowthRatePercentSetting)
+        public void IntegrationTest_OptimizeAssetCombinations(string maxSalePercentSetting, string realRiskGrowthRatePercentSetting, string[] singleCombo = null)
         {
             // Test all possible combinations of assets
             RiskEngine = new AlgorithmicRiskRecommendationEngine();
@@ -79,7 +80,13 @@ namespace MarketRisk.Testing
             var combinations = ListUtils.Combinations(Assets);
             PortfolioHistory bestPH = null;
             string[] bestAssetCombination = null;
-            IntegrationTest_OptimizeAssetCombinations_Specific(combinations, 0, null, out bestPH, out bestAssetCombination);
+            var specificCombinations = new List<string[]>();
+            if (singleCombo != null)
+            {
+                specificCombinations.AddRange(Assets.Select(x => new string[]{x}));
+                specificCombinations.Add(singleCombo);
+            }
+            IntegrationTest_OptimizeAssetCombinations_Specific(specificCombinations.Count == 0 ? combinations : specificCombinations, 0, null, out bestPH, out bestAssetCombination);
             BestAssetCombination = bestAssetCombination;
             Console.WriteLine("*** Best Asset Combination: [" + string.Join(",", BestAssetCombination).TrimEnd(',') + "]");
             bestPH.Stats.OutputToConsole();
@@ -114,10 +121,15 @@ namespace MarketRisk.Testing
             IEnumerable<string> assetCombination,
             string riskTolerance,
             string portfolioStats,
-            Dictionary<string, double> assetPositions)
+            Dictionary<string, double> assetPositions,
+            Dictionary<string, double> assetIdealPrices = null)
         {
             if (reportType == ReportType.HTML)
             {
+                if (assetIdealPrices is null)
+                {
+                    assetIdealPrices = new Dictionary<string, double>();
+                }
                 Dictionary<string, double[]> assetMetrics = new Dictionary<string, double[]>();
                 foreach (Asset a in portfolio.Assets)
                 {
@@ -131,11 +143,16 @@ namespace MarketRisk.Testing
                 foreach (string asset in assetCombination)
                 {
                     string assetPriceStr = "N/A";
+                    string assetIdealPriceStr = "N/A";
                     if (assetPrices.TryGetValue(asset, out double assetPrice))
                     {
                         assetPriceStr = assetPrice.ToString("N2");
                     }
-                    sbAssets.AppendLine(string.Format("<tr><td>{0}</td><td>{1:N2}</td><td>{2:N2}</td><td>{3:N2}</td></tr>", asset, assetPriceStr, assetMetrics[asset][0], assetMetrics[asset][1]));
+                    if (assetIdealPrices.TryGetValue(asset, out double assetIdealPrice))
+                    {
+                        assetIdealPriceStr = assetIdealPrice.ToString("N2");
+                    }
+                    sbAssets.AppendLine(string.Format("<tr><td>{0}</td><td>{1:N2}</td><td>{2:N2}</td><td>{3:N2}</td><td>{4}</td></tr>", asset, assetPriceStr, assetMetrics[asset][0], assetMetrics[asset][1], assetIdealPriceStr));
                 }
                 htmlTemplate = htmlTemplate.Replace("@@ASSET_ROWS", sbAssets.ToString());
                 StringBuilder sbETFs = new StringBuilder();

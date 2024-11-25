@@ -47,10 +47,8 @@ namespace MarketRisk.Portfolio
 				sb.AppendLine(string.Format("50 Years Growth: {0:N2} X", Last50Yr_ChangeInPrice));
 				sb.AppendLine(string.Format("50 Years Lowest Return: {0:N2} %", (Last50Yr_LowestReturn - 1.0) * 100.0));
 				sb.AppendLine(string.Format("50 Years Annualized Rate of Return: {0:N2} %", (Last50Yr_AnnualizedRateOfReturn - 1.0) * 100.0));
-#if DEBUG
                 sb.AppendLine(string.Format("Average Rolling 50-Year Return Variance: +/- {0:N2} %", Average_50Yr_AnnualReturnVariance));
-#endif
-				sb.AppendLine(string.Format("Maximum Amount Risked: ${0:N2}", MaxAmountRisked));
+                sb.AppendLine(string.Format("Maximum Amount Risked: ${0:N2}", MaxAmountRisked));
 				return sb.ToString();
 			}
 		}
@@ -60,11 +58,11 @@ namespace MarketRisk.Portfolio
 			Console.Write(StatText);
 		}
 
-		public string OutputToJSON()
-		{
-			return	"{\"Growth\":" + string.Format("{0:N2}", Last50Yr_ChangeInPrice).Replace(",", "") +
-				",\"LowestReturn\":" + string.Format("{0:N2}", (Last50Yr_LowestReturn - 1.0) * 100.0) +
-				",\"AnnualizedRateOfReturn\":" + string.Format("{0:N2}", (Last50Yr_AnnualizedRateOfReturn - 1.0) * 100.0) + "}";
-		}
-	}
+        public string OutputToJSON()
+        {
+            return "{\"Growth\":" + string.Format("{0:N2}", Last50Yr_ChangeInPrice).Replace(",", "") +
+                ",\"LowestReturn\":" + string.Format("{0:N2}", (Last50Yr_LowestReturn - 1.0) * 100.0) +
+                ",\"AnnualizedRateOfReturn\":" + string.Format("{0:N2}", (Last50Yr_AnnualizedRateOfReturn - 1.0) * 100.0) + "}";
+        }
+    }
 }

@@ -20,6 +20,20 @@ namespace MarketRisk.Recommend.Planning
         [Category("Current Stats")]
         [DisplayName("Current Invested Amount")]
         public double? CurrentInvestedAmount { get; set; }
+        [Category("Goal")]
+        [TypeConverter(typeof(GoalTypeConverter))]
+        public GoalType Goal { get; set; }
+        [Category("Goal")]
+        [DisplayName("Goal Amount Or Income")]
+        [Description("Income in retirement, or purchase total (Present Value)")]
+        public double? GoalAmountOrIncome { get; set; }
+        [Category("Goal")]
+        [DisplayName("Percent of Goal Risked")]
+        [Description("Risk tolerance as a percent of your goal amount")]
+        public double PercentRisked { get; set; } = 25;
+        [Category("Goal")]
+        [DisplayName("Margin of Safety (%)")]
+        public double MarginOfSafety { get; set; } = 10;
         [Category("Future Projections")]
         [DisplayName("Rate of Return on Savings (%/yr)")]
         public double? RateOfReturnOnSavings { get; set; }
@@ -32,86 +46,61 @@ namespace MarketRisk.Recommend.Planning
         [Category("Goal")]
         [DisplayName("Years Until Accomplishment")]
         public int NumberOfYears { get; set; } = 5;
-        [Category("Goal")]
-        [DisplayName("1 - Goal Type")]
-        [TypeConverter(typeof(GoalTypeConverter))]
-        public int TypeOfGoal { get; set; }
-        [Category("Goal")]
-        [DisplayName("2 - Goal Amount Or Income")]
-        [Description("Income in retirement, or purchase total (Present Value)")]
-        public double? GoalAmountOrIncome { get; set; }
-        [Category("Goal")]
-        [DisplayName("Percent of Goal Risked")]
-        [Description("Risk tolerance as a percent of your goal amount")]
-        public double PercentRisked { get; set; } = 25;
-        [Category("Goal")]
-        [DisplayName("Margin of Safety (%)")]
-        public double MarginOfSafety { get; set; } = 10;
     }
 
-    public static class GoalType
+    public enum GoalType
     {
         [Description("Retirement Income")]
-        public const int RetirementIncome = 0;
+        RetirementIncome=0,
         [Description("Major Purchase")]
-        public const int MajorPurchase = 1;
+        MajorPurchase=1
     }
 
-    public class GoalTypeConverter : Int32Converter
+    public class GoalTypeConverter : EnumConverter
     {
-        private List<string> values = new List<string>();
+        private Type enumType;
 
-        public GoalTypeConverter()
+        public GoalTypeConverter(Type type) : base(type)
         {
-            values.Add("Retirement Income");
-            values.Add("Major Purchase");
+            enumType = type;
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destType)
         {
-            if (value is int)
+            return destType == typeof(string);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture,
+                                         object value, Type destType)
+        {
+            if (value == null)
+                return null;
+
+            FieldInfo fi = enumType.GetField(Enum.GetName(enumType, value));
+            DescriptionAttribute dna = (DescriptionAttribute)Attribute.GetCustomAttribute(fi,
+                                        typeof(DescriptionAttribute));
+            if (dna != null)
+                return dna.Description;
+            else
+                return value.ToString();
+        }
+
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type srcType)
+        {
+            return srcType == typeof(string);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture,
+                                           object value)
+        {
+            foreach (FieldInfo fi in enumType.GetFields())
             {
-                int index = (int)value;
-                if (index >= 0 && index < values.Count)
-                    return values[index];
-
-                return values[0]; // error, go back to first
+                DescriptionAttribute dna = (DescriptionAttribute)Attribute.GetCustomAttribute(fi,
+                                            typeof(DescriptionAttribute));
+                if ((dna != null) && ((string)value == dna.Description))
+                    return Enum.Parse(enumType, fi.Name);
             }
-            return value;
-        }
-
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-        {
-            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-        }
-
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-        {
-            string s = value as string;
-            if (s != null)
-            {
-                int index = values.IndexOf(s);
-                if (index >= 0)
-                    return index;
-
-                // support direct integer input & validate
-                if (int.TryParse(s, out index) && index >= 0 && index < values.Count)
-                    return index;
-
-                return 0; // error, go back to first
-            }
-
-            return base.ConvertFrom(context, culture, value);
-        }
-
-        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            return new StandardValuesCollection(values);
-        }
-
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        {
-            return true;
+            return Enum.Parse(enumType, (string)value);
         }
     }
 }

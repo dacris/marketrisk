@@ -17,25 +17,27 @@ namespace MarketRisk.Testing
         public static void PredictAssetPrice(Tester tester, int startYear, string asset, out double highRisk, out double medRisk, out double lowRisk)
         {
             double highRiskCount = 0;
-            double medRiskCount = 0;
+            double medRiskCount = 1;
             double lowRiskCount = 0;
             highRisk = 0;
             medRisk = 0;
             lowRisk = 0;
-            double startPrice = 10000000000;
-            double step = 1.04;
-            for (double price = startPrice; price >= 0.05; price = price / step)
+            PortfolioHistory ph = tester.PortfolioHistories.Where(s => Enumerable.SequenceEqual(s.Key, new string[] { asset })).First().Value;
+            double ltrr = ph.LTRR[asset];
+            double m2 = MoneySupply.CalculateM2AdjustedToAsset(DateTime.Now.Year - startYear, ltrr);
+            double startPrice = Math.Pow(ph.M2toPriceAmplitude[asset], 2.0) * m2 / ph.AverageM2toPriceRatios[asset];
+            medRisk = m2 / ph.AverageM2toPriceRatios[asset];
+            double step = 1.002;
+            for (double price = startPrice; price >= 0.01; price = price / step)
             {
                 IRecommendationEngine rec = tester.RiskEngine;
-                PortfolioHistory ph = tester.PortfolioHistories.Where(s => Enumerable.SequenceEqual(s.Key, new string[] { asset })).First().Value;
-                double ltrr = ph.LTRR[asset];
-                double riskRatio = rec.CalculateRiskRatio(MoneySupply.CalculateM2AdjustedToAsset(DateTime.Now.Year - startYear, ltrr), price, ph.AssetAverageRisks[asset], ph.AverageM2toPriceRatios[asset], ph.M2toPriceAmplitude[asset], ph.AssetIncomeRate[asset]);
-                if (riskRatio >= 0.91 && riskRatio <= 0.96)
+                double riskRatio = rec.CalculateRiskRatio(m2, price, ph.AssetAverageRisks[asset], ph.AverageM2toPriceRatios[asset], ph.M2toPriceAmplitude[asset], ph.AssetIncomeRate[asset]);
+                if (riskRatio >= 0.92 && riskRatio <= 0.98)
                 {
                     highRisk += price;
                     highRiskCount++;
                 }
-                if (riskRatio >= 0.83 && riskRatio < 0.91)
+                if (riskRatio >= 0.83 && riskRatio < 0.92)
                 {
                     medRisk += price;
                     medRiskCount++;
@@ -47,8 +49,8 @@ namespace MarketRisk.Testing
                 }
             }
             highRisk = highRisk / highRiskCount;
-            medRisk = medRisk / medRiskCount;
             lowRisk = lowRisk / lowRiskCount;
+            medRisk = (highRisk + lowRisk + medRisk + medRisk + medRisk) / (medRiskCount * 3.0 + 2.0);
         }
 
         public static void FetchBondYields(AssetConfig assetConfig, out List<double> bondYields, out string csvAnnual, out string csvMonthly)

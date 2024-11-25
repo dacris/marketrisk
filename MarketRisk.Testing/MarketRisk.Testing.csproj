@@ -63,6 +63,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Bitcoin.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\CABond.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

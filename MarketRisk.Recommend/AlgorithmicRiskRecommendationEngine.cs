@@ -15,7 +15,7 @@ namespace MarketRisk.Recommend
         {
             double reciprocalRisk = new ReciprocalRiskRecommendationEngine().CalculateRiskRatio(m2, price, averageRisk, averageM2toPriceRatio, amplitudeM2toPrice, income);
             if (m2 / price < averageM2toPriceRatio * OvervaluedThreshold)
-                return Math.Min(Constants.MaxCalculatedRiskRatio, Math.Pow(reciprocalRisk, 1.0 / 4.0));
+                return Math.Min(Constants.MaxCalculatedRiskRatio, Math.Pow(reciprocalRisk, 1.0/4.0));
             else
                 return reciprocalRisk;
         }

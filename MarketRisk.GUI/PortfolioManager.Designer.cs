@@ -29,10 +29,10 @@ namespace MarketRisk.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PortfolioManager));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportHTMLReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportCSVReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.assetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,6 +61,7 @@ namespace MarketRisk.GUI
             this.label6 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.exportCSVReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -96,13 +97,6 @@ namespace MarketRisk.GUI
             this.exportHTMLReportToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
             this.exportHTMLReportToolStripMenuItem.Text = "Export &HTML Report";
             this.exportHTMLReportToolStripMenuItem.Click += new System.EventHandler(this.exportHTMLReportToolStripMenuItem_Click);
-            // 
-            // exportCSVReportToolStripMenuItem
-            // 
-            this.exportCSVReportToolStripMenuItem.Name = "exportCSVReportToolStripMenuItem";
-            this.exportCSVReportToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
-            this.exportCSVReportToolStripMenuItem.Text = "Export &Excel (CSV) Report";
-            this.exportCSVReportToolStripMenuItem.Click += new System.EventHandler(this.exportCSVReportToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
@@ -355,6 +349,13 @@ namespace MarketRisk.GUI
             this.label7.TabIndex = 8;
             this.label7.Text = "Prices are in USD.";
             // 
+            // exportCSVReportToolStripMenuItem
+            // 
+            this.exportCSVReportToolStripMenuItem.Name = "exportCSVReportToolStripMenuItem";
+            this.exportCSVReportToolStripMenuItem.Size = new System.Drawing.Size(262, 26);
+            this.exportCSVReportToolStripMenuItem.Text = "Export &Excel (CSV) Report";
+            this.exportCSVReportToolStripMenuItem.Click += new System.EventHandler(this.exportCSVReportToolStripMenuItem_Click);
+            // 
             // PortfolioManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -371,6 +372,7 @@ namespace MarketRisk.GUI
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MinimumSize = new System.Drawing.Size(1200, 680);

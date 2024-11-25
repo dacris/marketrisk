@@ -18,7 +18,7 @@ If you get a Windows warning, click "More Info" and then click "Run".
 
 3. Description of Assets
 ---
-There are 9 assets that this software enables you to explore (Assets menu).
+There are 10 assets that this software enables you to explore (Assets menu).
 1. USBond - This is the 10-year Treasury Bond (Asset Class: Government Bonds)
 2. Dow - This is the Dow Jones Industrial Average (Asset Class: Stocks)
 3. SP500 - This is the S&P 500 Index (Asset Class: Stocks)
@@ -28,6 +28,7 @@ There are 9 assets that this software enables you to explore (Assets menu).
 7. Platinum - This is the price of an ounce of platinum (Asset Class: Bullion)
 8. TSX - This is the S&P/TSX Composite Index (Asset Class: Stocks)
 9. CABond - This is the 10-year Canada Savings Bond (Asset Class: Government Bonds)
+10. Bitcoin - This is the popular cryptocurrency (Asset Class: Crypto)
 
 Choose "Best Configuration" for the configuration with the highest risk-adjusted-return.
 Otherwise, you can build your own by checking & unchecking the menu items.
