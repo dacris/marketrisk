@@ -234,8 +234,8 @@ function findBestCombo()
 	for (i in chosenCombos) {
 		for (j in window.mrcombinations) {
 			if (JSON.stringify(chosenCombos[i]) == JSON.stringify(window.mrcombinations[j].AssetCombination)) {
-				if (window.mrcombinations[j].Stats.AnnualizedRateOfReturn > maxReturn) {
-					maxReturn = window.mrcombinations[j].Stats.AnnualizedRateOfReturn;
+				if (window.mrcombinations[j].Stats.AnnualizedRateOfReturn * (100 + window.mrcombinations[j].Stats.LowestReturn * 1.6) > maxReturn) {
+					maxReturn = window.mrcombinations[j].Stats.AnnualizedRateOfReturn * (100 + window.mrcombinations[j].Stats.LowestReturn * 1.6);
 					maxCombo = i;
 				}
 			}
@@ -275,6 +275,7 @@ Portfolio Assets:<br />
 <br /><a href="#find-popup" class="mfp-inline">Find Best Combo</a>
 <br /><br />Add:<br />
 <select id="addthisasset">
+<option>Bitcoin</option>
 <option>CABond</option>
 <option>Dow</option>
 <option>Gold</option>
@@ -319,6 +320,7 @@ Copyright &copy; Dacris Software Inc. All Rights Reserved. <a href="http://www.d
 	<h4>Search for Best Combination</h4>
 	<div>Exclude the following assets from search:</div><br />
 	<!-- alphabetical order -->
+	<input type="checkbox" id="bitcoin" name="bitcoin" value="Bitcoin" /><label for="bitcoin"> Bitcoin</label><br />
 	<input type="checkbox" id="cabond" name="cabond" value="CABond" /><label for="cabond"> CABond</label><br />
 	<input type="checkbox" id="dow" name="dow" value="Dow" /><label for="dow"> Dow</label><br />
 	<input type="checkbox" id="gold" name="gold" value="Gold" /><label for="gold"> Gold</label><br />
