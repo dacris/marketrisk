@@ -34,6 +34,7 @@ There are 9 assets supported in the present version.
 7. TSX - This is the S&P/TSX Composite Index (Asset Class: Stocks)
 8. CABond - This is the Canadian 10-year bond (Asset Class: Bonds)
 9. USBond - This is the US Treasury 10-year bond (Asset Class: Bonds)
+10. Bitcoin - This is the popular cryptocurrency (Asset Class: Crypto)
 
 4. Position Recommendation Algorithms
 ---
