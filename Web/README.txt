@@ -12,6 +12,8 @@ Please consult with a qualified financial advisor before making your investment 
 
 2. Running
 ---
+First - If building from source, please copy the contents of the bin/Debug/net6.0 folder, from MarketRisk.Core.Console, into the subfolder 'Core'.
+
 On Windows:
 Execute "launch.cmd" from the NodeJS subfolder to start the application.
 Before the first run, you must run "npm install child_process" at a command line. Make sure you have .NET 6 and Node.js + NPM installed.
