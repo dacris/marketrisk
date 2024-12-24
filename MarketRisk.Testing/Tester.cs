@@ -152,7 +152,7 @@ namespace MarketRisk.Testing
                     {
                         assetIdealPriceStr = assetIdealPrice.ToString("N2");
                     }
-                    sbAssets.AppendLine(string.Format("<tr><td>{0}</td><td>{1:N2}</td><td>{2:N2}</td><td>{3:N2}</td><td>{4}</td></tr>", asset, assetPriceStr, assetMetrics[asset][0], assetMetrics[asset][1], assetIdealPriceStr));
+                    sbAssets.AppendLine(string.Format("<tr><td>{0}</td><td>{1}</td><td>{2:N2}</td><td>{3:N2}</td><td>{4}</td><td>{5:N2}</td></tr>", asset, assetPriceStr, assetMetrics[asset][0], assetMetrics[asset][1], assetIdealPriceStr, assetMetrics[asset][0] - assetPositions[asset]));
                 }
                 htmlTemplate = htmlTemplate.Replace("@@ASSET_ROWS", sbAssets.ToString());
                 StringBuilder sbETFs = new StringBuilder();
