@@ -1,8 +1,8 @@
 const http = require("http");
-const { exec, spawn, execFile, execFileSync } = require('child_process');
+const { exec, spawn, execFile, execFileSync, spawnSync, execSync } = require('child_process');
 var qs = require('querystring');
 const fs = require('fs');
-const mrroot = __dirname + "/..";
+const mrroot = __dirname.replace("/NodeJS", "");
 
 const PORT = process.env.PORT || 5000;
 
@@ -81,8 +81,8 @@ const server = http.createServer(async (req, res) => {
 		  // file written successfully
 		  if (POST["report"] == "false") { return; }
 
-	execFileSync(mrroot + '/Core/MarketRisk.Core.Console', [],
-		{ cwd: mrroot + '/Core/' },
+	spawnSync('dotnet', [mrroot + '/Core/MarketRisk.Core.Console.dll'],
+		{ cwd: mrroot + '/Core' },
 		(err, stdout, stderr) => {
 		  if (err) {
 		    console.error(err);
