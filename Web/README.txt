@@ -12,16 +12,23 @@ Please consult with a qualified financial advisor before making your investment 
 
 2. Running
 ---
-First - If building from source, please copy the contents of the bin/Debug/net6.0 folder, from MarketRisk.Core.Console, into the subfolder 'Core'.
+Prerequisites:
+- .NET 8+ SDK
+- Node.js v22 or earlier (LTS) with NPM installed
+
+First
+1. Run "dotnet build" in the MarketRisk.sln folder.
+2. Please copy the contents of the bin/Debug/net6.0 folder, from MarketRisk.Core.Console, into the subfolder 'Core'.
 
 On Windows:
 Execute "launch.cmd" from the NodeJS subfolder to start the application.
-Before the first run, you must run "npm install child_process" at a command line. Make sure you have .NET 6 and Node.js + NPM installed.
+Note - You may need to copy the "Core" and "LinuxUI" subfolders into the NodeJS folder for it to work on Windows.
+Make sure you have .NET 8+ and Node.js <= v22 + NPM installed.
 Requires Windows 10 22H2 or later OS.
 
 On Linux:
 Execute "launchNode.sh" from the NodeJS subfolder to start the application.
-Before the first run, you must run "setup.sh". Make sure you have .NET 6 and Node.js + NPM installed.
+Make sure you have .NET 8+ and Node.js <= v22 + NPM installed.
 Requires Debian 12, Pop_OS! 22.04 or Ubuntu 22.04 or later OS. Generally, Debian-based distros will work.
 
 3. Description of Assets
